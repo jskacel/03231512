@@ -1,0 +1,37 @@
+- name: windows_logs_size
+  vars:
+    win_logs_size:
+        directory_location: C:\Windows\System32\winevt
+        alert_size: 5000
+
+  win_shell: |
+      $result = @{
+        check_success=$false;
+        result_output=$null;
+        size=$null;
+        errors=$null;
+        directory="{{ win_logs_size.directory_location }}";
+      };
+      $size_appendix=" MB";
+      $directory_items = Test-Path "{{ win_logs_size.directory_location }}";
+      if(!$directory_items)
+        { $result.errors = -join("Directory ", "{{ win_logs_size.directory_location }}", "does not exist") }
+      else
+        {
+          $directory_items =  Get-ChildItem "{{ win_logs_size.directory_location }}" -Recurse -ErrorVariable errors -ErrorAction SilentlyContinue;
+          $mb_size = ($directory_items | Measure-Object -Property Length -Sum).Sum / 1MB;
+          $size = $mb_size;
+          if($size -ge 1000){
+              $size = $size / 1024;
+              $size_appendix=" GB";
+            }
+          $size = [math]::Round($size, 2)
+          $result.size = [math]::Round($mb_size, 2)
+          $result.result_output = ([math]::Round($size, 2)).toString() + $size_appendix
+        }
+      if($size -and [int]$size -in 0..{{ win_logs_size.alert_size }} )
+        { $result.check_success = $true }
+
+      $result | ConvertTo-Json
+
+  register: result
