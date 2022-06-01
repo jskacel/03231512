@@ -1,5 +1,6 @@
 - name: windows_logs_size
-  hosts: all
+  hosts: windows_host
+  gather_facts: false
   vars:
     win_logs_size:
         directory_location: C:\Windows\System32\winevt
