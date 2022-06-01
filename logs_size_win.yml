@@ -1,5 +1,5 @@
 - name: windows_logs_size
-  hosts: windows_host
+  hosts: all
   gather_facts: false
   vars:
     win_logs_size:
