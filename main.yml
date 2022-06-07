@@ -1,6 +1,10 @@
 ---
   - hosts: all
     gather_facts: false
+    vars:
+      win_logs_size:
+      directory_location: C:\Windows\System32\winevt
+      alert_size: 5000
 
     tasks:
       - name: run include_tasks
