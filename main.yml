@@ -1,0 +1,17 @@
+---
+  - hosts: all
+    gather_facts: false
+
+    tasks:
+      - name: run include_tasks
+        block:
+          - name: windows ping
+            win_ping:
+
+          - include_tasks: logs_size_win.yml
+          - set_fact:
+              log_size_results: "{{ result.stdout | from_json }}"
+
+          - debug:
+              var: log_size_results
+
